@@ -42,10 +42,8 @@ func (q *Quad) quadrant(p Particle) (*Quad, error) {
 	// Check if point in range
 	if p.Position.X < q.Bbox.X || p.Position.X > q.Bbox.X+q.Bbox.Width {
 		return nil, fmt.Errorf(
-			"out of bounds (v: %v, min: %v, max: %v)",
-			p.Position.X,
-			q.Bbox.X,
-			q.Bbox.X+q.Bbox.Width,
+			"out of bounds: %v",
+			q,
 		)
 	}
 
@@ -110,13 +108,13 @@ func (q *Quad) AddParticles(p []Particle) error {
 }
 
 func (q *Quad) Subdivide() error {
-	top := q.Bbox.Y
-	bottom := top + q.Bbox.Height
-	left := q.Bbox.X
-	right := left + q.Bbox.Width
-
 	width := q.Bbox.Width / 2
 	height := q.Bbox.Height / 2
+
+	top := q.Bbox.Y
+	bottom := top + width
+	left := q.Bbox.X
+	right := left + height
 
 	// Don't modify data until confirming that no errors will occur
 	if q.Topleft != nil {

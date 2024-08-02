@@ -1,3 +1,10 @@
+all: build
+
 run:
-	set CGO_ENABLED=0
 	go run main.go
+
+build:
+	go build -o build/raylib-ai
+
+clean:
+	rm -rf build
