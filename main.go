@@ -2,7 +2,6 @@ package main
 
 import (
 	// Standard lib
-	// "log"
 	"math/rand"
 
 	// Submodules
@@ -26,29 +25,34 @@ func main() {
 	for !rl.WindowShouldClose() {
 		// Add particle on click
 		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
-			c := rl.NewColor(uint8(rand.Intn(256)), 0, 0, 255)
-			p := particle.NewParticleV(rl.GetMousePosition(), 5, c)
+			pos := rl.GetMousePosition()
+
+			p := newParticle(25)
+			p.Position = pos
 
 			particles = append(particles, p)
 		}
 
 		// Create new quadtree
-		qt := quadtree.NewQuad(rl.NewRectangle(0, 0, 800, 600), 1)
+		qt := quadtree.NewQuad(rl.NewRectangle(0, 0, 800, 600), 5)
 		qt.AddParticles(particles)
 
 		// Add new particles
-		// const particleCount = 5
-		// for i := 0; i < particleCount; i++ {
-		// 	x := rand.Float32() * float32(rl.GetScreenWidth())
-		// 	y := rand.Float32() * float32(rl.GetScreenHeight())
-		// 	r := 2 + (rand.Float32()*3)
-		// 	c := rl.NewColor(uint8(rand.Intn(256)), 0, 0, 255)
+		const particleCount = 5
+		for i := 0; i < particleCount; i++ {
+			x := rand.Float32() * float32(rl.GetScreenWidth())
+			y := rand.Float32() * float32(rl.GetScreenHeight())
+			r := 2 + (rand.Float32() * 3)
 
-		// 	particles = append(particles, particle.NewParticle(x, y, r, c))
-		// }
+			p := newParticle(r)
+			p.Position.X = x
+			p.Position.Y = y
+
+			particles = append(particles, p)
+		}
 
 		// Solve particle collisions
-		// particle.SolveCollisionsSubsteps(&particles, 8)
+		particle.SolveCollisionsSubsteps(&particles, 8)
 
 		// Drawing logic
 		rl.BeginDrawing()
@@ -64,9 +68,18 @@ func main() {
 	}
 }
 
+func newParticle(r float32) particle.Particle {
+	// Get random color
+	v := uint8(rand.Intn(256))
+	c := rl.NewColor(0, v, 0, 255)
+	p := particle.NewParticle(0, 0, r, c)
+
+	return p
+}
+
 func debugQuadtree(q *quadtree.Quad) {
 	// Draw rectangle
-	rl.DrawRectangleLinesEx(q.BBox, 3, rl.Black)
+	rl.DrawRectangleLinesEx(q.BBox, 2, rl.Black)
 
 	for _, quad := range q.Quadrants() {
 		if quad != nil {
